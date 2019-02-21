@@ -14,20 +14,22 @@ router.delete('/:id', _delete);
 
 module.exports = router;
 
+//authenticate user for login
 function authenticate(req, res, next) {
-    
-    
     userService.authenticate(req.body)
         .then(user => user ? res.json(user) : res.status(200).json({ message: 'invalid' }))
         .catch(err => next(err));
         
 }
 
+//registering user
 function register(req, res, next) {
     userService.create(req.body)
-        .then(() => res.json({}))
+        .then(() => res.status(200).json({message: 'registering_successful'}))
         .catch(err => next(err));
 }
+
+
 
 
 

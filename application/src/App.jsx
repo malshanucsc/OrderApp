@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { BrowserRouter, Switch, Route, Link} from 'react-router-dom';
+import {Switch, Route, Link} from 'react-router-dom';
 import './App.css';
 import Create from './components/create.component.jsx';
-import Edit from './components/edit.component';
 import Index from './components/index.component.jsx';
 import Login from './components/login.component.jsx';
 
 class App extends Component {
   constructor(props){
     super(props)
-    //this.isAuth=false;
+    
     this.access_detail="asdasdas";
     
     
@@ -21,20 +20,28 @@ class App extends Component {
       greeting:"",
       isAuth : false
       
-    };
+    }
+
+      
 
     this.handleLogout = this.handleLogout.bind(this);
     this.handleLogin = this.handleLogin.bind(this);
-    
+
+
 
   
   }
+
+  componentWillMount(){
+    this.setState({
+      isAuth:true
+
+    });
+
+  }
+
+  
   handleLogin(){
-    
-    
-    
-      console.log("asda");
-      
      
       this.setState({
         user_data:JSON.parse(localStorage.getItem('user_data')),
@@ -113,7 +120,6 @@ class App extends Component {
           <Switch>
               <Route path='/login' render={(props) => <Login {...props} handleLogin={this.handleLogin} />}   />
               <Route exact path='/create' render={(props) => <Create {...props}  handleLogout={this.handleLogout}   />} />
-              <Route path='/edit/:id' component={ Edit } />
               <Route path='/' render={(props) => <Index {...props}  handleLogout={this.handleLogout}   />}   />
           </Switch>
           
