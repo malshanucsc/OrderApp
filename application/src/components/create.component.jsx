@@ -88,9 +88,7 @@ export default class Create extends Component {
       subtot : 0.0
     });  
   }
-  onChangeGstNumber(e) {
-    this.setState({business_gst_number: e.target.value});
-  }
+  
 
   //alerting function
   alertAndTimeout(type,message){

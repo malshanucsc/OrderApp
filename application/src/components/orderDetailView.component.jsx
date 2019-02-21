@@ -8,7 +8,7 @@ export default class OrderDetailView extends Component {
     super(props);
     
     this.onChangeOrderName = this.onChangeOrderName.bind(this);
-    this.onChangeItemName = this.onChangeItemName.bind(this);
+    this.onChangeItemName = this.onChangeItemName.bind(this);    
     this.onChangeQuantity = this.onChangeQuantity.bind(this);
     this.onChangeUnitValue = this.onChangeUnitValue.bind(this);
     this.onChangeCustomerName = this.onChangeCustomerName.bind(this);
@@ -36,18 +36,59 @@ export default class OrderDetailView extends Component {
     }
   }
 
+
+  calculateGrandTotal(){
+    let temporyGrandTot = 0.0;
+    
+    for(let i = 0;i<this.state.item_set.length;i++){
+      temporyGrandTot+=this.state.item_set[i].subtot;   
+    }
+    this.setState({grand_total:temporyGrandTot});
+  }
+
+
   //on change input handlers
   onChangeOrderName = (e)=> {
     this.setState({order_name: e.target.value});
   };
-  onChangeItemName(e) {
-    this.setState({item_name: e.target.value});  
+  onChangeExistItemName(item,e) {
+    
+    let itemArray = [...this.state.item_set]; // make a separate copy of the array
+    let index = itemArray.indexOf(item)
+    
+    if (index !== -1) {
+      itemArray[index].item_name=e.target.value;
+      this.setState({ item_set: itemArray});
+    }
+  
   }
+  onChangeItemName(e) {
+
+    this.setState({item_name: e.target.value});
+  
+  }
+
+
   onChangeQuantity(e) {  
     this.setState({quantity: e.target.value,},()=>this.setState({
       subtot:this.state.unit_value * this.state.quantity
     }));
   }
+  onChangeExistQuantity(item,e) {
+
+    let itemArray = [...this.state.item_set]; // make a separate copy of the array
+    let index = itemArray.indexOf(item)
+    
+    if (index !== -1) {
+      itemArray[index].quantity = e.target.value;
+      itemArray[index].subtot = (itemArray[index].quantity)*(itemArray[index].unit_value);
+
+      this.setState({ item_set: itemArray},()=>this.calculateGrandTotal());
+    }
+
+  }
+
+  
   onChangeUnitValue(e) {
     this.setState({
       unit_value: e.target.value,
@@ -56,9 +97,26 @@ export default class OrderDetailView extends Component {
       subtot:this.state.unit_value * this.state.quantity
     }));
   }
+  onChangeExistUnitValue(item,e) {
+    
+    
+    let itemArray = [...this.state.item_set]; // make a separate copy of the array
+    let index = itemArray.indexOf(item)
+    
+    if (index !== -1) {
+      itemArray[index].unit_value = e.target.value;
+      itemArray[index].subtot = (itemArray[index].quantity)*(itemArray[index].unit_value);
+
+      this.setState({ item_set: itemArray,},()=>this.calculateGrandTotal());
+    }
+    
+  }
+
+
   onChangeSubTot(e) {
     this.setState({subtot: e.target.value});
   }
+  
   onChangeCustomerName(e) {
     this.setState({customer_name: e.target.value});
   }
@@ -113,9 +171,7 @@ export default class OrderDetailView extends Component {
     // });   
   }
 
-  onChangeGstNumber(e) {
-    this.setState({business_gst_number: e.target.value});
-  }
+  
 
   //alerting function
   alertAndTimeout(type,message){
@@ -204,6 +260,7 @@ export default class OrderDetailView extends Component {
  
   render() {
     
+    
     if(this.state.user_data===null || this.state.user_data===undefined){
       this.props.history.push('/login');
     }
@@ -246,13 +303,13 @@ export default class OrderDetailView extends Component {
                   {this.state.item_set.map((item)=>
                   <tr key={item._id}>
                     <td>
-                      <input type="text" className="form-control" name={ `name-${ this.props.index }` } value={item.item_name} onChange={this.onChangeItemName} />
+                      <input type="text" className="form-control" name={ `name-${ this.props.index }` } value={item.item_name} onChange={this.onChangeExistItemName.bind(this,item)} />
                     </td>
                     <td>
-                      <input type="number" className="form-control" name={ `quantity-${ this.props.index }` } value={item.quantity} onChange={this.onChangeQuantity} />
+                      <input type="number" className="form-control" name={ `quantity-${ this.props.index }` } value={item.quantity} onChange={this.onChangeExistQuantity.bind(this,item)} />
                     </td>
                     <td>
-                      <input type="number" className="form-control" name={ `unitvalue-${ this.props.index }` } value={item.unit_value} onChange={this.onChangeUnitValue} />
+                      <input type="number" className="form-control" name={ `unitvalue-${ this.props.index }` } value={item.unit_value} onChange={this.onChangeExistUnitValue.bind(this,item)} />
                     </td>
                     <td>
                       <input type="text" className="form-control" name={ `subtot-${ this.props.index }` } readOnly value={item.subtot} onChange={this.onChangeSubTot}/>
